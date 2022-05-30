@@ -14,5 +14,5 @@ const username = args[2];
     const api = new TiktokScraper()
 
     const profile = await api.getProfile(username)
-    console.log(profile)
+    console.log(JSON.stringify(profile))
 })()

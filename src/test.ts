@@ -5,5 +5,5 @@ import TiktokScraper from './TiktokScraper';
     api.puppeteerOptions.headless = false
 
     const profile = await api.getProfile('pierreminiggio')
-    console.log(profile)
+    console.log(JSON.stringify(profile))
 })()
