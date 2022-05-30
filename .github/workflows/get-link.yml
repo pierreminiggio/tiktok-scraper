@@ -1,0 +1,25 @@
+
+on:
+  workflow_dispatch:
+    inputs:
+      username:
+        description: "Username"
+        required: true
+        default: "pierreminiggio"
+name: Get Profile
+jobs:
+  get:
+    name: Get Profile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - uses: actions/setup-node@main
+      - run: sudo apt update
+      - run: npm i
+      - run: node dist/cli.js $username > profile.json
+        env:
+          link: ${{ github.event.inputs.username }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: profile.json
+          path: profile.json
