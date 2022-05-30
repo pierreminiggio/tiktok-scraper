@@ -18,7 +18,7 @@ jobs:
       - run: npm i
       - run: node dist/cli.js $username > profile.json
         env:
-          link: ${{ github.event.inputs.username }}
+          username: ${{ github.event.inputs.username }}
       - uses: actions/upload-artifact@v2
         with:
           name: profile.json
