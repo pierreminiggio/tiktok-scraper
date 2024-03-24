@@ -6,6 +6,7 @@ declare type PuppeteerOptions = LaunchOptions & BrowserLaunchArgumentOptions & B
 };
 export default class TiktokScraper {
     puppeteerOptions: PuppeteerOptions;
+    solvePuzzleCaptcha(outerImageLink: string, innerImageLink: string): Promise<number>;
     getProfile(username: string): Promise<Profile>;
 }
 export {};

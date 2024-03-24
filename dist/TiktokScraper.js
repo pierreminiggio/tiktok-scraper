@@ -10,6 +10,9 @@ class TiktokScraper {
             args: ['--no-sandbox']
         };
     }
+    async solvePuzzleCaptcha(outerImageLink, innerImageLink) {
+        throw Error('Puzzle Captcha solver not implemented for these links : ' + outerImageLink + ' ' + innerImageLink);
+    }
     async getProfile(username) {
         let browser;
         try {
@@ -29,8 +32,49 @@ class TiktokScraper {
             const captchaVerificationBarSelector = '.captcha_verify_bar';
             const captchaVerificationBar = await page.$(captchaVerificationBarSelector);
             if (captchaVerificationBar) {
-                await browser.close();
-                throw Error('Captcha required');
+                const captchaVerificationBarText = await captchaVerificationBar.evaluate(captchaVerificationBar => captchaVerificationBar.textContent);
+                if (captchaVerificationBarText && captchaVerificationBarText.includes('puzzle')) {
+                    const [outerImageLink, innerImageLink] = await captchaVerificationBar.evaluate(captchaVerificationBar => {
+                        const captchaVerificationContainer = captchaVerificationBar.nextElementSibling;
+                        if (!captchaVerificationContainer) {
+                            return [null, null];
+                        }
+                        const outerImageLinkElementSelector = '[data-testid="whirl-outer-img"]';
+                        const outerImageElement = captchaVerificationContainer.querySelector(outerImageLinkElementSelector);
+                        if (!outerImageElement) {
+                            return [null, null];
+                        }
+                        const outerImageLink = outerImageElement.getAttribute('src');
+                        if (!outerImageLink) {
+                            return [null, null];
+                        }
+                        const innerImageLinkElementSelector = '[data-testid="whirl-inner-img"]';
+                        const innerImageElement = captchaVerificationContainer.querySelector(innerImageLinkElementSelector);
+                        if (!innerImageElement) {
+                            return [null, null];
+                        }
+                        const innerImageLink = innerImageElement.getAttribute('src');
+                        if (!innerImageLink) {
+                            return [null, null];
+                        }
+                        return [outerImageLink, innerImageLink];
+                    });
+                    if (!outerImageLink || !innerImageLink) {
+                        await browser.close();
+                        throw Error('Puzzle captcha required but couldn\'t find the links');
+                    }
+                    try {
+                        const degreeValueToSpin = await this.solvePuzzleCaptcha(outerImageLink, innerImageLink);
+                    }
+                    catch (e) {
+                        await browser.close();
+                        throw e;
+                    }
+                }
+                else {
+                    await browser.close();
+                    throw Error('Unknown captcha required');
+                }
             }
             const videos = [];
             for (const videoThumbnailElement of videoThumbnailElements) {
