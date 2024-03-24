@@ -29,10 +29,19 @@ export default class TiktokScraper {
 
             const tiktokProfileUrl = 'https://www.tiktok.com/@' + username
             await page.goto(tiktokProfileUrl)
+
+            await page.waitForTimeout(10000)
             
             const videoThumbnailSelector = '[data-e2e="user-post-item"]'
-
             const videoThumbnailElements = await page.$$(videoThumbnailSelector);
+
+            const captchaVerificationBarSelector = '.captcha_verify_bar'
+            const captchaVerificationBar = await page.$(captchaVerificationBarSelector)
+
+            if (captchaVerificationBar) {
+                await browser.close()
+                throw Error('Captcha required')
+            }
 
             const videos: Video[] = []
 

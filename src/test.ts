@@ -4,6 +4,10 @@ import TiktokScraper from './TiktokScraper';
     const api = new TiktokScraper()
     api.puppeteerOptions.headless = false
 
-    const profile = await api.getProfile('pierreminiggio')
-    console.log(JSON.stringify(profile))
+    try {
+        const profile = await api.getProfile('pierreminiggio')
+        console.log(JSON.stringify(profile))
+    } catch (e) {
+        console.log(e)
+    }
 })()

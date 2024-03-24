@@ -23,8 +23,15 @@ class TiktokScraper {
             const page = pages.length > 0 ? pages[0] : await browser.newPage();
             const tiktokProfileUrl = 'https://www.tiktok.com/@' + username;
             await page.goto(tiktokProfileUrl);
+            await page.waitForTimeout(10000);
             const videoThumbnailSelector = '[data-e2e="user-post-item"]';
             const videoThumbnailElements = await page.$$(videoThumbnailSelector);
+            const captchaVerificationBarSelector = '.captcha_verify_bar';
+            const captchaVerificationBar = await page.$(captchaVerificationBarSelector);
+            if (captchaVerificationBar) {
+                await browser.close();
+                throw Error('Captcha required');
+            }
             const videos = [];
             for (const videoThumbnailElement of videoThumbnailElements) {
                 const url = await videoThumbnailElement.evaluate(videoThumbnailElement => { var _a; return (_a = videoThumbnailElement.querySelector('a')) === null || _a === void 0 ? void 0 : _a.href; });
