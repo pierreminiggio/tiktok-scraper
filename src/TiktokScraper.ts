@@ -40,7 +40,7 @@ export default class TiktokScraper {
             const videoThumbnailSelector = '[data-e2e="user-post-item"]'
             const videoThumbnailElements = await page.$$(videoThumbnailSelector);
 
-            const captchaVerificationBarSelector = '.captcha_verify_bar'
+            const captchaVerificationBarSelector = '.captcha-verify-container'
             const captchaVerificationBar = await page.$(captchaVerificationBarSelector)
 
             if (captchaVerificationBar) {
@@ -48,13 +48,13 @@ export default class TiktokScraper {
                 
                 if (captchaVerificationBarText && captchaVerificationBarText.includes('puzzle')) {
                     const [outerImageLink, innerImageLink] = await captchaVerificationBar.evaluate(captchaVerificationBar => {
-                        const captchaVerificationContainer = captchaVerificationBar.nextElementSibling
+                        const captchaVerificationContainer = captchaVerificationBar
 
                         if (! captchaVerificationContainer) {
                             return [null, null]
                         }
 
-                        const outerImageLinkElementSelector = '[data-testid="whirl-outer-img"]'
+                        const outerImageLinkElementSelector = 'img'
 
                         const outerImageElement = captchaVerificationContainer.querySelector(outerImageLinkElementSelector)
 
@@ -68,7 +68,7 @@ export default class TiktokScraper {
                             return [null, null]
                         }
 
-                        const innerImageLinkElementSelector = '[data-testid="whirl-inner-img"]'
+                        const innerImageLinkElementSelector = 'img+img'
 
                         const innerImageElement = captchaVerificationContainer.querySelector(innerImageLinkElementSelector)
 
